@@ -1,4 +1,4 @@
-package election_structure;
+package npc_fuzzy_recomendation;
 
 import java.util.ArrayList;
 import java.util.Arrays;

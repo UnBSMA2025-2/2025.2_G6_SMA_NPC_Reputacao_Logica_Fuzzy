@@ -1,9 +1,9 @@
 QUORUM ?= 3
 DF_MAX_RESULT := $(shell expr $(QUORUM) + 5)
-PATH_PROJECT_JAR = target/election_structure-0.0.1-SNAPSHOT.jar
-PROJECT_GROUP    = election_structure
+PATH_PROJECT_JAR = target/npc_fuzzy_recomendation-0.0.1-SNAPSHOT.jar
+PROJECT_GROUP    = npc_fuzzy_recomendation
 JADE_AGENTS      = creator:$(PROJECT_GROUP).Creator($(QUORUM));
-JADE_FLAGS 		 = -gui -jade_domain_df_maxresult $(DF_MAX_RESULT) -agents "$(JADE_AGENTS)"
+JADE_FLAGS 		 = -gui -agents "$(JADE_AGENTS)"
 
 .PHONY:
 	clean
