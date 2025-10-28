@@ -38,12 +38,22 @@ public class Creator extends BaseAgent {
 			votersQuorum = Integer.parseInt(args[0].toString());
 		}
 
+		launchAgent("Player", PlayerAgent.class.getName(), null);
+
+		launchAgent("NPC1", NPCAgent.class.getName(), null);
+		launchAgent("NPC2", NPCAgent.class.getName(), null);
+
+		launchAgent("Subordinate1-llm", Subordinate.class.getName(), new Object[] { LLM });
+		launchAgent("Subordinate2-fuzzy", Subordinate.class.getName(), new Object[] { FUZZY });
+		launchAgent("Subordinate3-statistic", Subordinate.class.getName(), new Object[] { STATISTIC });
+
+
 		logger.log(Level.INFO, "Agents started...");
 		pauseSystem();
 
 		// send them a message demanding start
 		logger.log(Level.INFO, "Starting system!");
-
+		sendMessage("Player", ACLMessage.INFORM, String.format("%s", START));
 	}
 
 	private void pauseSystem() {
@@ -69,37 +79,5 @@ public class Creator extends BaseAgent {
 			logger.log(Level.SEVERE, String.format("%s ERROR WHILE LAUNCHING AGENTS %s", ANSI_RED, ANSI_RESET));
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	protected OneShotBehaviour handleRequest(ACLMessage msg) {
-		return new OneShotBehaviour(this) {
-			private static final long serialVersionUID = 1L;
-
-			public void action() {
-				if (msg.getContent().startsWith(CREATE)) {
-					String [] splittedMsg = msg.getContent().split(" ");
-
-					if(splittedMsg[1].equals("Ballot")){
-						try {
-							String ballot = String.format("%s%d", "ballot_", ballotCnt);
-
-							ballotCnt++;
-							
-							launchAgent(ballot, "election_structure.Ballot", null);	
-							
-							AgentContainer container = getContainerController();
-							logger.log(Level.INFO, String.format("%s CREATED AND STARTED NEW BALLOT: %s ON CONTAINER %s",
-							getLocalName(), ballot, container.getName()));	
-						} catch (Exception any) {
-							logger.log(Level.SEVERE, String.format("%s ERROR WHILE CREATING AGENTS %s", ANSI_RED, ANSI_RESET));
-							any.printStackTrace();
-						}
-					}else{
-						logger.log(Level.SEVERE, String.format("%s UNEXPECTED AGENT REQUESTED %s", ANSI_YELLOW, ANSI_RESET));
-					}
-				}
-			}
-		};
 	}
 }

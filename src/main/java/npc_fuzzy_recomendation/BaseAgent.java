@@ -19,10 +19,6 @@ import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
-enum Types {
-	COMMON_VOTER
-}
-
 public abstract class BaseAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
@@ -31,27 +27,19 @@ public abstract class BaseAgent extends Agent {
 	public static final String ANSWER = "ANSWER";
 	public static final String THANKS = "THANKS";
 	public static final String START = "START";
-	public static final String VOTEID = "VOTEID";
+
+	public static final String PLAYER_DATA = "PLAYER_DATA";
+
 	public static final String INVITE = "INVITE";
 	public static final String REGISTERED = "REGISTERED";
 	public static final String INFORM = "INFORM";
-	public static final String VOTE = "VOTE";
-	public static final String WINNER = "WINNER";
-	public static final String DRAW = "DRAW";
-	public static final String UNEXPECTED_MSG = "RECEIVED AN UNEXPECTED MESSAGE FROM";
-	public static final String CREATE = "CREATE";
 	public static final String CREATOR = "Creator";
-	public static final String VOTER = "voter";
-	public static final String QUORUM = "QUORUM";
-	public static final String CANDIDATURE = "CANDIDATURE";
-	public static final String PROPOSAL = "PROPOSAL";
-	public static final String CHECK = "CHECK";
-	public static final String FAILURE = "FAILURE";
-	public static final String READY = "READY";
-	public static final String RESULTS = "RESULTS";
-	public static final String ELECTIONLOG = "ELECTIONLOG";
-	public static final String CANDIDCODE = "CANDIDCODE";
-	public static final String CANDIDATE = "CANDIDATE";
+
+	public static final String UNEXPECTED_MSG = "RECEIVED AN UNEXPECTED MESSAGE FROM";
+
+	public static final String LLM = "LLM";
+	public static final String FUZZY = "FUZZY";
+	public static final String STATISTIC = "STATISTIC";
 
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLUE = "\u001B[34m";
@@ -64,16 +52,13 @@ public abstract class BaseAgent extends Agent {
 	public static final String ANSI_WHITE = "\u001B[37m";
 
 	protected static final Random rand = new Random();
-	
-	protected int votingCode;
 
 	protected static final Logger logger = Logger.getLogger(BaseAgent.class.getName());
 
 	protected static final Long TIMEOUT_LIMIT = 1000L;
-	protected boolean brokenAgent = false;
-	protected boolean candidate = false;
 
-	public static final String DEFAULT_PROPOSAL = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam suscipit tempor sem, id egestas metus commodo nec. Vivamus semper ultricies risus, vitae sollicitudin erat molestie a. Cras posuere turpis condimentum interdum rhoncus. Nulla a velit velit. Maecenas accumsan a leo eu lacinia. Cras lectus ligula, egestas quis eros ac, condimentum dapibus nisl. Nunc cursus nisi neque, eget tempor felis iaculis ac. Ut libero ipsum, fermentum vel enim non, cursus hendrerit massa. Etiam efficitur nisi a ullamcorper blandit. Suspendisse sodales interdum turpis, sed rhoncus enim dapibus dignissim. Vestibulum ut lacinia mi, sed varius tellus.";
+	protected int dataSize;
+	protected ArrayList<String> workingData = new ArrayList<>();
 
 
 	@Override
@@ -171,7 +156,7 @@ public abstract class BaseAgent extends Agent {
 		};
 	}
 
-	protected WakerBehaviour timeoutBehaviour( String motivation, long timeout) {
+	protected WakerBehaviour timeoutBehaviour(AID requestedAgent, String motivation, long timeout) {
 		return new WakerBehaviour (this, timeout) {
 			private static final long serialVersionUID = 1L;
 
@@ -321,6 +306,32 @@ public abstract class BaseAgent extends Agent {
 			Arrays.asList(searchAgentByType(searchTypes.toArray(new String[]{}))));
 
 		return foundMediators;
+	}
+
+	protected ArrayList<String> parseData(ACLMessage msg) {
+		String msgContent = msg.getContent();
+		String[] parts = msgContent.split(" ");
+		
+		// Find the PLAYER_DATA marker
+		int playerDataIndex = -1;
+		for (int i = 0; i < parts.length; i++) {
+			if (parts[i].equals(PLAYER_DATA)) {
+				playerDataIndex = i;
+				break;
+			}
+		}
+		
+		if (playerDataIndex == -1) {
+			return new ArrayList<>();
+		}
+		
+		// Get everything after PLAYER_DATA
+		ArrayList<String> playerData = new ArrayList<>();
+		for (int i = playerDataIndex + 1; i < parts.length; i++) {
+			playerData.add(parts[i]);
+		}
+		
+		return playerData;
 	}
 }
 
