@@ -1,0 +1,62 @@
+FUNCTION_BLOCK fuzzy_reputation
+
+VAR_INPUT
+    kills : REAL;
+    deaths : REAL;
+    level : REAL;
+    achievements : REAL;
+END_VAR
+
+VAR_OUTPUT
+    approval : REAL;
+END_VAR
+
+FUZZIFY kills
+    TERM low := (0,1) (200,1) (400,0);
+    TERM medium := (200,0) (500,1) (800,0);
+    TERM high := (600,0) (800,1) (1000,1);
+END_FUZZIFY
+
+FUZZIFY deaths
+    TERM low := (0,1) (10,1) (50,0);
+    TERM medium := (20,0) (50,1) (100,0);
+    TERM high := (60,0) (120,1) (200,1);
+END_FUZZIFY
+
+FUZZIFY level
+    TERM low := (0,1) (20,1) (50,0);
+    TERM medium := (20,0) (50,1) (80,0);
+    TERM high := (60,0) (80,1) (100,1);
+END_FUZZIFY
+
+FUZZIFY achievements
+    TERM few := (0,1) (1,1) (4,0);
+    TERM some := (2,0) (5,1) (8,0);
+    TERM many := (5,0) (8,1) (12,1);
+END_FUZZIFY
+
+DEFUZZIFY approval
+    TERM low := (0,1) (25,1) (50,0);
+    TERM medium := (25,0) (50,1) (75,0);
+    TERM high := (50,0) (75,1) (100,1);
+    METHOD : COG;
+    DEFAULT := 0;
+END_DEFUZZIFY
+
+RULEBLOCK No1
+    AND : MIN;
+    ACT : MIN;
+    ACCU : MAX;
+
+    RULE 1  : IF kills IS high AND deaths IS low AND level IS high AND achievements IS many THEN approval IS high;
+    RULE 2  : IF kills IS high AND deaths IS low AND level IS medium THEN approval IS high;
+    RULE 3  : IF kills IS medium AND deaths IS low AND level IS high THEN approval IS medium;
+    RULE 4  : IF deaths IS high THEN approval IS low;
+    RULE 5  : IF level IS low AND kills IS low THEN approval IS low;
+    RULE 6  : IF achievements IS few AND kills IS low THEN approval IS low;
+    RULE 7  : IF kills IS medium AND deaths IS medium AND level IS medium AND achievements IS some THEN approval IS medium;
+    RULE 8  : IF kills IS high AND deaths IS medium THEN approval IS medium;
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
+

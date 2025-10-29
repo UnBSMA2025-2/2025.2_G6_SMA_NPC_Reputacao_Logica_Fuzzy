@@ -1,6 +1,9 @@
 package npc_fuzzy_recomendation.strategies;
 
+import java.io.InputStream;
 import java.util.ArrayList;
+import net.sourceforge.jFuzzyLogic.FIS;
+import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 public class FuzzyStrategy implements Strategy {
     @Override
@@ -11,21 +14,47 @@ public class FuzzyStrategy implements Strategy {
             double level = recvData.get(1);
             double achievements = recvData.get(2);
             double deaths = recvData.get(3);
-            
-            // Simple fuzzy logic:
-            // - High kills (>500) and low deaths (<50) is good
-            // - High level (>50) is good
-            // - Many achievements (>5) is good
-            double killScore = Math.min(100, (kills / 1000.0) * 100);
-            double deathPenalty = Math.max(0, 100 - (deaths / 50.0) * 100);
-            double levelScore = Math.min(100, (level / 100.0) * 100);
-            double achievementScore = Math.min(100, (achievements / 10.0) * 100);
-            
-            // Calculate weighted average
-            double approvalScore = (killScore * 0.3 + deathPenalty * 0.2 + levelScore * 0.3 + achievementScore * 0.2);
-            result.add(approvalScore);
+
+            String resourcePath = "/fuzzy/fuzzy_reputation.fcl";
+            try (InputStream fclStream = getClass().getResourceAsStream(resourcePath)) {
+
+                if (fclStream == null) {
+                    System.err.println("Erro: Não foi possível encontrar o arquivo FCL: " + resourcePath);
+                    result.add(0.0);
+                    return result;
+                }
+
+                FIS fis = FIS.load(fclStream, true);
+
+                if (fis == null) {
+                    System.err.println("Erro: Falha ao carregar o FIS.");
+                    result.add(0.0);
+                    return result;
+                }
+
+                Variable vKills = fis.getVariable("kills");
+                Variable vLevel = fis.getVariable("level");
+                Variable vAchievements = fis.getVariable("achievements");
+                Variable vDeaths = fis.getVariable("deaths");
+
+                if (vKills != null) vKills.setValue(kills);
+                if (vLevel != null) vLevel.setValue(level);
+                if (vAchievements != null) vAchievements.setValue(achievements);
+                if (vDeaths != null) vDeaths.setValue(deaths);
+
+                fis.evaluate();
+
+                Variable vApproval = fis.getVariable("approval");
+                double approval = (vApproval != null) ? vApproval.getValue() : 0.0;
+
+                result.add(approval);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.add(0.0);
+            }
         } else {
-            result.add(0.0);  // Invalid data
+            result.add(0.0);
         }
         return result;
     }
