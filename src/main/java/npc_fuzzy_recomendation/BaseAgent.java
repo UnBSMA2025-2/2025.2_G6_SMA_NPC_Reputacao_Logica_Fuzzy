@@ -55,7 +55,7 @@ public abstract class BaseAgent extends Agent {
 
 	protected static final Logger logger = Logger.getLogger(BaseAgent.class.getName());
 
-	protected static final Long TIMEOUT_LIMIT = 1000L;
+	protected static final Long TIMEOUT_LIMIT = 30000L;
 
 	protected int dataSize;
 	protected ArrayList<String> workingData = new ArrayList<>();

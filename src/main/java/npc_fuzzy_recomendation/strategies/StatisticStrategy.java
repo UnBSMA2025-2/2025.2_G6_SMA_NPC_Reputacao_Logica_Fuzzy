@@ -12,20 +12,15 @@ public class StatisticStrategy implements Strategy {
             double achievements = recvData.get(2);
             double deaths = recvData.get(3);
             
-            // Statistical analysis focusing on performance metrics:
-            // - K/D ratio is primary
-            // - Level indicates experience
-            // - Achievements are bonus points
             double kdRatio = deaths > 0 ? kills / deaths : kills;
-            double kdScore = Math.min(100, (kdRatio / 3.0) * 100);  // 3:1 ratio is considered good
-            double experienceScore = Math.min(100, (level / 60.0) * 100);  // Level 60 is baseline for experienced
-            double achievementBonus = Math.min(20, achievements * 2);  // Each achievement adds 2% up to 20%
+            double kdScore = Math.min(100, (kdRatio / 3.0) * 100);
+            double experienceScore = Math.min(100, (level / 60.0) * 100);
+            double achievementBonus = Math.min(20, achievements * 2);
             
-            // Calculate final score with statistical weights
             double approvalScore = (kdScore * 0.5 + experienceScore * 0.3) * (1 + achievementBonus / 100.0);
-            result.add(Math.min(100, approvalScore));  // Cap at 100%
+            result.add(Math.min(100, approvalScore));
         } else {
-            result.add(0.0);  // Invalid data
+            result.add(0.0);
         }
         return result;
     }

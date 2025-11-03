@@ -143,7 +143,6 @@ public class Subordinate extends BaseAgent {
 	private ACLMessage handleSetStrategy(ACLMessage msg, String reqOperation, ACLMessage msg2, boolean strategySet) {
 		if (strategySet) {
 			ArrayList<Double> result = new ArrayList<>();
-			// Convert strings to doubles for strategy operation
 			ArrayList<Double> numericData = new ArrayList<>();
 			for (String data : workingData) {
 				try {
