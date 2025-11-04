@@ -19,6 +19,7 @@ import jade.lang.acl.ACLMessage;
 public class NPCAgent extends BaseAgent {
 
 	private static final long serialVersionUID = 1L;
+	private String npcPersonality = "";
 
 	private static Map<String, Integer>  operations = Collections.synchronizedMap(new HashMap<>());
 	private static Set<AID> timedOutAgents = Collections.synchronizedSet(new HashSet<AID>());
@@ -29,6 +30,12 @@ public class NPCAgent extends BaseAgent {
 	protected void setup() {
 		logger.log(Level.INFO, "I'm the NPC: " + this.getLocalName());
 		this.registerDF(this, "NPC", "npc");
+
+		Object[] args = getArguments();
+		if (args != null && args.length > 0) {
+			npcPersonality = args[0].toString();
+			logger.log(Level.INFO, getLocalName() + " personalidade: " + npcPersonality);
+		}
 
 		addBehaviour(handleMessages());
 	}
@@ -64,59 +71,119 @@ public class NPCAgent extends BaseAgent {
 					
 					// Agradecer ao subordinado
 					sendMessage(msg.getSender().getLocalName(), ACLMessage.INFORM, THANKS);
-					
-					// Verificar se todas as estratégias responderam
-					if (operations.isEmpty()) {
-						// Todas as estratégias responderam, hora de tomar a decisão final
-						double finalDecision = makeFinalDecision();
-						
-						// Encontrar o Player para enviar a resposta
-						DFAgentDescription[] players = searchAgentByType("Player");
-						logger.log(Level.INFO, String.format("%s Procurando por agentes Player. Encontrados: %d", 
-							getLocalName(), players.length));
+					if (strategy != "LLM"){
+						if (operations.isEmpty()) {
+							// Todas as estratégias responderam, hora de tomar a decisão final
+							int finalDecision = makeFinalDecision();
 							
+							if (finalDecision != -1) {
+
+								DFAgentDescription[] players = searchAgentByType("Player");
+								logger.log(Level.INFO, String.format("%s Procurando por agentes Player. Encontrados: %d",
+										getLocalName(), players.length));
+
+								if (players == null || players.length == 0) {
+									logger.log(Level.WARNING,
+											String.format("%s Nenhum agente Player encontrado no DF!", getLocalName()));
+									return;
+								}
+
+								if (players.length > 0) {
+									AID playerAID = players[0].getName();
+									ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
+									reply.addReceiver(playerAID);
+
+
+									String decision = "";
+
+									if (finalDecision == 1) {
+										decision = "ACEITA";
+									} else {
+										decision = "REJEITA";
+									}
+
+									StringBuilder response = new StringBuilder();
+									response.append(PLAYER_DATA).append(" RESPOSTA ");
+									response.append(decision).append(" ");
+									response.append(String.format("%d", finalDecision));
+
+									for (Map.Entry<String, Double> entry : strategyResults.entrySet()) {
+										response.append(" ").append(entry.getKey())
+												.append(":").append(String.format("%.2f", entry.getValue()));
+									}
+
+									reply.setContent(response.toString());
+									
+									logger.log(Level.INFO, "\nDecisão final do NPC para o jogador:" +
+											"\n----------------------------------------" +
+											"\nStatus: " + decision +
+											"\nScore Final: " + String.format("%.2f", (strategyResults.getOrDefault("FUZZY", 0.0)+ strategyResults.getOrDefault("STATISTIC", 0.0))/2) +
+											"\nAvaliações individuais:" +
+											"\n- FUZZY: "
+											+ String.format("%.2f%%", strategyResults.getOrDefault("FUZZY", 0.0)) +
+											"\n- STATISTIC: "
+											+ String.format("%.2f%%", strategyResults.getOrDefault("STATISTIC", 0.0)) +
+											"\n----------------------------------------");
+									send(reply);
+
+									strategyResults.clear();
+								}
+							}
+							
+						}
+					} else {
+						DFAgentDescription[] players = searchAgentByType("Player");
+						logger.log(Level.INFO, String.format("%s Procurando por agentes Player. Encontrados: %d",
+								getLocalName(), players.length));
+
 						if (players == null || players.length == 0) {
-							logger.log(Level.WARNING, String.format("%s Nenhum agente Player encontrado no DF!", getLocalName()));
+							logger.log(Level.WARNING,
+									String.format("%s Nenhum agente Player encontrado no DF!", getLocalName()));
 							return;
 						}
-						
+
+						Double finalDecision = strategyResults.get("LLM");
+
+
 						if (players.length > 0) {
 							AID playerAID = players[0].getName();
 							ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
 							reply.addReceiver(playerAID);
-							
-							// Determinar aceitação baseado no threshold (por exemplo, 70%)
-							boolean accepted = finalDecision >= 70.0;
-							String decision = accepted ? "ACEITO" : "RECUSADO";
-							
-							// Criar resposta no formato PLAYER_DATA
+
+							String decision = "";
+
+							if (finalDecision > 89) {
+								decision = "ACEITA";
+							} else {
+								decision = "REJEITA";
+							}
+
 							StringBuilder response = new StringBuilder();
 							response.append(PLAYER_DATA).append(" RESPOSTA ");
 							response.append(decision).append(" ");
-							response.append(String.format("%.2f", finalDecision));
-							
-							// Adicionar as avaliações individuais
+							response.append(String.format("%d", finalDecision));
+
 							for (Map.Entry<String, Double> entry : strategyResults.entrySet()) {
 								response.append(" ").append(entry.getKey())
-									   .append(":").append(String.format("%.2f", entry.getValue()));
+										.append(":").append(String.format("%.2f", entry.getValue()));
 							}
-							
+
 							reply.setContent(response.toString());
-							
+
 							// Log detalhado para debug
+
 							logger.log(Level.INFO, "\nDecisão final do NPC para o jogador:" +
-								"\n----------------------------------------" +
-								"\nStatus: " + decision +
-								"\nScore Final: " + String.format("%.2f%%", finalDecision) +
-								"\nAvaliações individuais:" +
-								"\n- FUZZY: " + String.format("%.2f%%", strategyResults.getOrDefault("FUZZY", 0.0)) +
-								"\n- LLM: " + String.format("%.2f%%", strategyResults.getOrDefault("LLM", 0.0)) +
-								"\n- STATISTIC: " + String.format("%.2f%%", strategyResults.getOrDefault("STATISTIC", 0.0)) +
-								"\n----------------------------------------");
-							
+									"\n----------------------------------------" +
+									"\nStatus: " + decision +
+									"\nScore Final: " + String.format("%d", finalDecision) +
+									"\nAvaliações individuais:" +
+									"\n- FUZZY: "
+									+ String.format("%.2f%%", strategyResults.getOrDefault("FUZZY", 0.0)) +
+									"\n- STATISTIC: "
+									+ String.format("%.2f%%", strategyResults.getOrDefault("STATISTIC", 0.0)) +
+									"\n----------------------------------------");
 							send(reply);
-							
-							// Limpar resultados para próxima rodada
+
 							strategyResults.clear();
 						}
 					}
@@ -142,36 +209,38 @@ public class NPCAgent extends BaseAgent {
 		};
 	}
 	
-	/**
-	 * Calcula a decisão final baseada nos resultados de todas as estratégias.
-	 * Implementa uma lógica de "melhor de três" ponderada.
-	 */
-	private double makeFinalDecision() {
+
+	private int makeFinalDecision() {
 		if (strategyResults.isEmpty()) {
-			return 0.0;
+			return 0;
 		}
 		
-		// Pesos para cada estratégia
 		Map<String, Double> weights = new HashMap<>();
-		weights.put("FUZZY", 0.4);    // 40% peso para Fuzzy
-		weights.put("LLM", 0.35);     // 35% peso para LLM
-		weights.put("STATISTIC", 0.25); // 25% peso para Estatística
+		weights.put("FUZZY", 0.5);     
+		weights.put("STATISTIC", 0.5); 
 		
 		double weightedSum = 0.0;
 		double totalWeight = 0.0;
 		
-		// Calcular média ponderada
 		for (Map.Entry<String, Double> entry : strategyResults.entrySet()) {
 			String strategy = entry.getKey();
 			Double result = entry.getValue();
-			Double weight = weights.getOrDefault(strategy, 0.33); // Peso padrão se não especificado
-			
+			Double weight = weights.getOrDefault(strategy, 0.33);
 			weightedSum += result * weight;
 			totalWeight += weight;
 		}
-		
-		// Retornar média ponderada normalizada
-		return totalWeight > 0 ? weightedSum / totalWeight : 0.0;
+
+		if (weightedSum > 79) {
+			return 1;
+		} else if (weightedSum > 40 && weightedSum < 80) {
+			
+			searchSubordinatesByOperation("LLM");
+			operations.put("LLM", 1);
+
+			return -1;
+		} else {
+			return 0;
+		}
 	}
     
 	@Override
@@ -183,37 +252,35 @@ public class NPCAgent extends BaseAgent {
 				String content = msg.getContent();
 				if(msg.getPerformative() == ACLMessage.PROPOSE) {
 					if (content.startsWith("CAN_DO")) {
-						// Extract the operation from the message
 						String operation = content.split(" ")[1];
 						
 						if (operations.containsKey(operation) && !operationsSent.contains(operation)) {
-							// We need this operation and haven't sent data to anyone yet
 							operationsSent.add(operation);
 							
-							// Create acceptance message with the player data
 							ACLMessage reply = msg.createReply();
 							reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 							logger.log(Level.INFO, "Preparing data to send for operation: " + operation);
 							// Preparar a mensagem com os dados do jogador
 							StringBuilder dataMsg = new StringBuilder();
+
 							dataMsg.append(operation).append(" ").append(PLAYER_DATA);
 							for (String data : workingData) {
 								dataMsg.append(" ").append(data);
 							}
+
+							dataMsg.append(" PERSONA:").append(npcPersonality);
+
 							reply.setContent(dataMsg.toString());
 							logger.log(Level.INFO, "Sending data: " + dataMsg.toString());
 							
-							// Send acceptance and data
 							send(reply);
 							
-							// Set up timeout for this agent's response
 							addBehaviour(timeoutBehaviour(msg.getSender(), operation, TIMEOUT_LIMIT));
 							
 							logger.log(Level.INFO, String.format("%s ACCEPTED PROPOSAL FROM %s FOR %s", 
 								getLocalName(), msg.getSender().getLocalName(), operation));
 								
 						} else {
-							// Either we don't need this operation anymore or already assigned it
 							ACLMessage reply = msg.createReply();
 							reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
 							reply.setContent(String.format("OPERATION %s NOT NEEDED OR ALREADY ASSIGNED", operation));
@@ -288,12 +355,10 @@ public class NPCAgent extends BaseAgent {
                 if (msg.getContent().startsWith(PLAYER_DATA)) {
                     logger.info("Recebido dados do jogador. Iniciando análise com múltiplas estratégias.");
                     
-                    // Armazenar dados do jogador
                     workingData = parseData(msg);
                     logger.info("Dados do jogador recebidos: " + workingData);
                     
-                    // Array com as estratégias disponíveis
-                    String[] strategies = {"FUZZY", "LLM", "STATISTIC"};
+                    String[] strategies = {"FUZZY", "STATISTIC"};
                     
                     // Limpar dados antigos
                     operations.clear();
@@ -301,7 +366,6 @@ public class NPCAgent extends BaseAgent {
                     operationsRequested.clear();
                     operationsSent.clear();
                     
-                    // Registrar operações que precisamos
                     for (String strategy : strategies) {
                         operations.put(strategy, 1);
                     }
@@ -318,14 +382,6 @@ public class NPCAgent extends BaseAgent {
                         }
                     }
                     
-                    // Aguardar todas as respostas (handleInform lidará com as respostas)
-                    // O comportamento handleInform será chamado para cada resposta recebida
-                    // e irá coletar os resultados
-                    
-                    // Quando todas as respostas forem recebidas (operations estiver vazio),
-                    // o handleInform enviará a resposta final baseada no "melhor de três"
-                    
-                    // Enviar resposta inicial ao jogador
                     ACLMessage reply = msg.createReply();
                     reply.setPerformative(ACLMessage.INFORM);
                     reply.setContent("Análise iniciada com " + strategies.length + " estratégias diferentes.");

@@ -1,62 +1,71 @@
-# RepositorioTemplate
-Esse repositório é para ser utilizado pelos grupos como um template inicial, da home page do Projeto.
-As seções do Template NÃO DEVEM SER OMITIDAS, sendo TODAS RELEVANTES.
-
-**!! *Atenção: Renomeie o seu repositório para (Ano.Semestre)_(Grupo)_SMA_(NomeDaFrenteDePesquisa)*. !!** 
-
-**!! *Não coloque os nomes dos alunos no título do repositório*. !!**
-
-**!! *Exemplo de título correto: 2025.2_G1_SMA_ProjetoComportamentoEmergente*. !!**
- 
- (Apague esses comentários)
-
-# NomeDoProjeto
+# Como NPCs podem aceitar entrar em grupos de Jogadores com base em sua reputação
 
 **Disciplina**: FGA0053 - Sistemas Multiagentes <br>
-**Nro do Grupo (de acordo com a Planilha de Divisão dos Grupos)**: XX<br>
-**Frente de Pesquisa**: XXXXXXXXXX<br>
+**Nro do Grupo (de acordo com a Planilha de Divisão dos Grupos)**: 06<br>
+**Frente de Pesquisa**:Reputação e Lógica Nebulosa  <br>
 
 ## Alunos
 |Matrícula | Aluno |
 | -- | -- |
-| xx/xxxxxx  |  xxxx xxxx xxxxx |
-| xx/xxxxxx  |  xxxx xxxx xxxxx |
+| 200014447  |  André Corrêa |
+| xx/xxxxxx  |  Gabriel Rosa |
+| 190058455  |  Mariana Rio  |
+| xx/xxxxxx  |  Rafael Nobre |
 
 ## Sobre 
-Descreva o seu projeto em linhas gerais. 
-Use referências, links, que permitam conhecer um pouco mais sobre o projeto.
-Capriche nessa seção, pois ela é a primeira a ser lida pelos interessados no projeto.
+
+O projeto tem como objetivo investigar como NPCs (Non-Player Characters) podem avaliar solicitações de jogadores para formarem grupos, 
+baseando-se em critérios de reputação e lógica nebulosa (fuzzy logic) para lidar com as incertezas no processo de tomada de decisão.
+
+O sistema desenvolvido implementa agentes inteligentes usando o framework JADE (Java Agent DEvelopment)
+
+A execução e interação entre agentes ocorrem via terminal, por meio de logs que representam a troca de mensagem e as decisões tomadas pelos NPCs 
+com base nas estatísticas do jogador.
+
+O fluxo de decisão do NPC é dividido em etapas, conforme ilustrado no diagrama abaixo:
+
+<p align="center"> <img src="./assets/fluxo_npc.jpg" alt="Fluxo de decisão do NPC" width="700"/> </p>
+
+1. O agente NPC recebe os dados de estatística do jogador e realiza uma primeira verificação por meio dos seus subordinados quantitativos, o STATISTIC e FUZZY.
+2. Esses subordinados retornam uma classificação para o NPC que faz uma média ponderada entre os valores.
+3. Caso o valor retornado seja aprovado ele aceita entrar no grupo, caso ele seja meio aprovado ele faz uma segunda verificação apartir do subordinado LLM. 
+4. O agente LLM faz uma verificação apartir dos estatísticas do jogador e da personalidade do NPC e devolve uma porcentagem para o NPC.
+5. Se essa porcentagem for maior que um certo numero definido pelo NPC ele aceita entrar no grupo, caso contrário rejeita.
 
 ## Screenshots
-Adicione 2 ou mais screenshots do projeto em termos de interface e/ou funcionamento.
+![alt text](image.png)
+Figura 1 - Fluxo de decisão do NPC e seus agentes subordinados.
 
 ## Instalação 
-**Linguagens**: xxxxxx<br>
-**Tecnologias**: xxxxxx<br>
-Descreva os pré-requisitos para rodar o seu projeto e os comandos necessários.
-Insira um manual ou um script para auxiliar ainda mais.
-Gifs animados e outras ilustrações são bem-vindos!
+**Linguagens**: Java<br>
+**Tecnologias**: JADE, Maven<br>
+**Versao do Java usada**: Java 25 (LTS)
+
+## Pré-requisitos
+- [JDK 25+](https://www.oracle.com/java/technologies/downloads/)
+- [Apache Maven](https://maven.apache.org/)
+- [JADE Framework](https://jade.tilab.com/) (gerenciado automaticamente via Maven)
 
 ## Uso 
-Explique como usar seu projeto.
-Procure ilustrar em passos, com apoio de telas do software, seja com base na interface gráfica, seja com base no terminal.
-Nessa seção, deve-se revelar de forma clara sobre o funcionamento do software.
+
+Para utilizar a API do Gemini, é necessário gerar uma chave de acesso (API Key). Isso pode ser feito acessando o [Google AI Studio](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwidxYW4r9eQAxVYHrkGHWNlJsMQjJEMegQINBAB&url=https%3A%2F%2Faistudio.google.com%2F&usg=AOvVaw2ado6WVRi8CYsaHcreSChK&opi=89978449)
+
+Em seguida, clone o repositório e acesse o diretório do projeto, nele em um terminal digite:
+
+```bash
+make build-and-run
+```
 
 ## Vídeo
-Adicione 1 ou mais vídeos com a execução do projeto.
-Procure: 
-(i) Introduzir o projeto;
-(ii) Mostrar passo a passo o código, explicando-o, e deixando claro o que é de terceiros, e o que é contribuição real da equipe;
-(iii) Apresentar particularidades do Paradigma, da Linguagem, e das Tecnologias, e
-(iV) Apresentar lições aprendidas, contribuições, pendências, e ideias para trabalhos futuros.
-OBS: TODOS DEVEM PARTICIPAR, CONFERINDO PONTOS DE VISTA.
-TEMPO: +/- 15min
+
 
 ## Participações
-Apresente, brevemente, como cada membro do grupo contribuiu para o projeto.
 |Nome do Membro | Contribuição | Significância da Contribuição para o Projeto (Excelente/Boa/Regular/Ruim/Nula) | Comprobatórios (ex. links para commits)
 | -- | -- | -- | -- |
-| Fulano  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
+| André Corrêa  |  Preparação do ambiente, Desenvolvimento da interação com LLM, Revisão técnica do código fonte, Definição da arquitetura da solução | Boa | Commit tal (com link)
+| Gabriel Rosa  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
+| Mariana Rio   |  Definição e organização da estrutura geral de funcionamento do sistema, fluxo de tomada de decisão com base no perfil do NPC e programação do agente LLM| Boa | Commit tal (com link)
+| Rafael Nobre  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
 
 ## Outros 
 Quaisquer outras informações sobre o projeto podem ser descritas aqui. Não esqueça, entretanto, de informar sobre:
@@ -66,5 +75,4 @@ Quaisquer outras informações sobre o projeto podem ser descritas aqui. Não es
 (iV) Trabalhos Futuros.
 
 ## Fontes
-Referencie, adequadamente, as referências utilizadas.
-Indique ainda sobre fontes de leitura complementares.
+[Organização com a base dos building blocks utilizados](https://github.com/SMA-building-blocks)

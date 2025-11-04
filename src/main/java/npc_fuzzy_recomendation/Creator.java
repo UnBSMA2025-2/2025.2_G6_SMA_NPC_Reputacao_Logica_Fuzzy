@@ -40,12 +40,13 @@ public class Creator extends BaseAgent {
 
 		launchAgent("Player", PlayerAgent.class.getName(), null);
 
-		launchAgent("NPC1", NPCAgent.class.getName(), null);
-		launchAgent("NPC2", NPCAgent.class.getName(), null);
+		launchAgent("NPC1", NPCAgent.class.getName(), new Object[] {"Agressivo e competitivo"});
+		launchAgent("NPC2", NPCAgent.class.getName(), new Object[] {"Ambicioso e estratégico"});
+		launchAgent("NPC3", NPCAgent.class.getName(), new Object[] {"Impulsivo e resiliente"});
 
-		launchAgent("Subordinate1-llm", Subordinate.class.getName(), new Object[] { LLM });
-		launchAgent("Subordinate2-fuzzy", Subordinate.class.getName(), new Object[] { FUZZY });
-		launchAgent("Subordinate3-statistic", Subordinate.class.getName(), new Object[] { STATISTIC });
+		launchAgent("Subordinate1", Subordinate.class.getName(), new Object[] { LLM });
+		launchAgent("Subordinate2", Subordinate.class.getName(), new Object[] { FUZZY });
+		launchAgent("Subordinate3", Subordinate.class.getName(), new Object[] { STATISTIC });
 
 
 		logger.log(Level.INFO, "Agents started...");
