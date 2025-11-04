@@ -57,14 +57,14 @@ make build-and-run
 ```
 
 ## Vídeo
-
+[Aqui!](https://www.youtube.com/watch?v=J1oIZlI_Dq4)
 
 ## Participações
-|Nome do Membro | Contribuição | Significância da Contribuição para o Projeto (Excelente/Boa/Regular/Ruim/Nula) | Comprobatórios (ex. links para commits)
+|Nome do Membro | Contribuição | Significância da Contribuição para o Projeto (Excelente/Boa/Regular/Ruim/Nula) | Comprobatórios
 | -- | -- | -- | -- |
-| André Corrêa  |  Preparação do ambiente, Desenvolvimento da interação com LLM, Revisão técnica do código fonte, Definição da arquitetura da solução | Boa | Commit tal (com link)
+| André Corrêa  |  Preparação do ambiente, Desenvolvimento da interação com LLM, Revisão técnica do código fonte, Definição da arquitetura da solução | Boa | [Commit](https://github.com/UnBSMA2025-2/2025.2_G6_SMA_NPC_Reputacao_Logica_Fuzzy/commit/3fae050575c35b1a083cebb01dd01650670073ab)
 | Gabriel Rosa  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
-| Mariana Rio   |  Definição e organização da estrutura geral de funcionamento do sistema, fluxo de tomada de decisão com base no perfil do NPC e programação do agente LLM| Boa | Commit tal (com link)
+| Mariana Rio   |  Definição e organização da estrutura geral de funcionamento do sistema, fluxo de tomada de decisão com base no perfil do NPC e programação do agente LLM| Boa | [Commit](https://github.com/UnBSMA2025-2/2025.2_G6_SMA_NPC_Reputacao_Logica_Fuzzy/commit/3fae050575c35b1a083cebb01dd01650670073ab)
 | Rafael Nobre  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
 
 ## Outros 
