@@ -8,6 +8,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import FIPA.stringsHelper;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -24,7 +26,7 @@ public class LlmStrategy implements Strategy {
     private final Gson gson = new Gson();
 
     @Override
-    public ArrayList<Double> executeOperation(ArrayList<Double> recvData) {
+    public ArrayList<Double> executeOperation(ArrayList<Object> recvData) {
         
         ArrayList<Double> result = new ArrayList<>();
         
@@ -33,10 +35,11 @@ public class LlmStrategy implements Strategy {
             return result;
         }
         
-        double kills = recvData.get(0);
-        double level = recvData.get(1);
-        double achievements = recvData.get(2);
-        double deaths = recvData.get(3);
+        double kills = Double.parseDouble((String) recvData.get(0));
+        double level = Double.parseDouble((String) recvData.get(1));
+        double achievements = Double.parseDouble((String) recvData.get(2));
+        double deaths = Double.parseDouble((String) recvData.get(3));
+        String playerPersona = (String) recvData.get(4);
 
         double levelScore = Math.min(100, (level / 80.0) * 100); 
         double achievementScore = Math.min(100, (achievements / 8.0) * 100);
@@ -53,9 +56,9 @@ public class LlmStrategy implements Strategy {
             "Você está atuando como um avaliador com a seguinte personalidade: \"%s\".\n" + 
             "Avalie este jogador com base na personalidade e os seguintes dados, então retorne uma pontuação de aprovação entre 0 e 100 no campo 'score' do JSON.\n" +
             "Dados do jogador:\n" +
-            "- Kills: %.0f\n- Level: %.0f\n- Achievements: %.0f\n- Deaths: %.0f\n\n" +
+            "- Kills: %.0f\n- Level: %.0f\n- Achievements: %.0f\n- Deaths: %.0f\n- Personalidade do jogador: \"%s\"\n" +
             "Considere que um nível 80 e 8 achievements são excelentes. Retorne SOMENTE o objeto JSON.",
-            npcPersona, kills, level, achievements, deaths);
+            npcPersona, kills, level, achievements, deaths, playerPersona);
 
         try {
             double llmApprovalScore = callGemini(prompt);

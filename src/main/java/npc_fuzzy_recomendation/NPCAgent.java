@@ -54,6 +54,9 @@ public class NPCAgent extends BaseAgent {
 					ArrayList<String> msgContent = new ArrayList<>(Arrays.asList(msg.getContent().split(" ")));
 					String strategy = msgContent.get(1); // FUZZY, LLM, ou STATISTIC
 					
+
+
+
 					// Extrair o resultado numérico (assumindo que é o último número na mensagem)
 					ArrayList<String> recvData = parseData(msg);
 					if (!recvData.isEmpty()) {
@@ -71,7 +74,7 @@ public class NPCAgent extends BaseAgent {
 					
 					// Agradecer ao subordinado
 					sendMessage(msg.getSender().getLocalName(), ACLMessage.INFORM, THANKS);
-					if (strategy != "LLM"){
+					if (!strategy.equals("LLM")){
 						if (operations.isEmpty()) {
 							// Todas as estratégias responderam, hora de tomar a decisão final
 							int finalDecision = makeFinalDecision();
@@ -114,7 +117,8 @@ public class NPCAgent extends BaseAgent {
 
 									reply.setContent(response.toString());
 									
-									logger.log(Level.INFO, "\nDecisão final do NPC para o jogador:" +
+									System.out.println("AAAAAAAAAAAAAAAAAAA" + strategy);
+									logger.log(Level.INFO, "\nAAAAAAAAAAAAAAAAAAAAAADecisão final do NPC para o jogador:" +
 											"\n----------------------------------------" +
 											"\nStatus: " + decision +
 											"\nScore Final: " + String.format("%.2f", (strategyResults.getOrDefault("FUZZY", 0.0)+ strategyResults.getOrDefault("STATISTIC", 0.0))/2) +
@@ -142,7 +146,7 @@ public class NPCAgent extends BaseAgent {
 							return;
 						}
 
-						Double finalDecision = strategyResults.get("LLM");
+						int finalDecision = makeFinalDecision();
 
 
 						if (players.length > 0) {
@@ -152,7 +156,7 @@ public class NPCAgent extends BaseAgent {
 
 							String decision = "";
 
-							if (finalDecision > 89) {
+							if (finalDecision == 1) {
 								decision = "ACEITA";
 							} else {
 								decision = "REJEITA";
@@ -175,12 +179,15 @@ public class NPCAgent extends BaseAgent {
 							logger.log(Level.INFO, "\nDecisão final do NPC para o jogador:" +
 									"\n----------------------------------------" +
 									"\nStatus: " + decision +
-									"\nScore Final: " + String.format("%d", finalDecision) +
+									"\nScore Final: " + String.format("%.2f", (strategyResults.getOrDefault("FUZZY", 0.0)
+															+ strategyResults.getOrDefault("STATISTIC", 0.0) + strategyResults.getOrDefault("LLM", 0.0))/3) +
 									"\nAvaliações individuais:" +
 									"\n- FUZZY: "
 									+ String.format("%.2f%%", strategyResults.getOrDefault("FUZZY", 0.0)) +
 									"\n- STATISTIC: "
 									+ String.format("%.2f%%", strategyResults.getOrDefault("STATISTIC", 0.0)) +
+									"\n- LLM: "
+									+ String.format("%.2f%%", strategyResults.getOrDefault("LLM", 0.0)) +
 									"\n----------------------------------------");
 							send(reply);
 
@@ -213,6 +220,13 @@ public class NPCAgent extends BaseAgent {
 	private int makeFinalDecision() {
 		if (strategyResults.isEmpty()) {
 			return 0;
+		} else if(strategyResults.containsKey("LLM")) {
+			double llmScore = strategyResults.get("LLM");
+			if (llmScore >= 80) {
+				return 1;
+			} else {
+				return 0;
+			}
 		}
 		
 		Map<String, Double> weights = new HashMap<>();
@@ -230,9 +244,9 @@ public class NPCAgent extends BaseAgent {
 			totalWeight += weight;
 		}
 
-		if (weightedSum > 79) {
+		if (weightedSum > 100) {
 			return 1;
-		} else if (weightedSum > 40 && weightedSum < 80) {
+		} else if (weightedSum > 40 && weightedSum < 190) {
 			
 			searchSubordinatesByOperation("LLM");
 			operations.put("LLM", 1);

@@ -52,7 +52,6 @@ public class Creator extends BaseAgent {
 		logger.log(Level.INFO, "Agents started...");
 		pauseSystem();
 
-		// send them a message demanding start
 		logger.log(Level.INFO, "Starting system!");
 		sendMessage("Player", ACLMessage.INFORM, String.format("%s", START));
 	}
@@ -73,7 +72,7 @@ public class Creator extends BaseAgent {
 
 	private void launchAgent(String agentName, String className, Object[] args) {
 		try {
-			AgentContainer container = getContainerController(); // get a container controller for creating new agents
+			AgentContainer container = getContainerController(); 
 			AgentController newAgent = container.createNewAgent(agentName, className, args);
 			newAgent.start();
 		} catch (Exception e) {

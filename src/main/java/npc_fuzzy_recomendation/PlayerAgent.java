@@ -32,7 +32,7 @@ public class PlayerAgent extends BaseAgent {
                     DFAgentDescription[] npcAgents = searchAgentByType("NPC");
 
                     if (npcAgents.length > 0) {
-                        AID npc = npcAgents[0].getName(); // Pega o primeiro que encontrar
+                        AID npc = npcAgents[rand.nextInt(0, npcAgents.length)].getName();
                         logger.info("Encontrou NPC: " + npc.getLocalName() + ". Enviando convite.");
 
                         // Criar a mensagem de REQUEST
@@ -40,11 +40,26 @@ public class PlayerAgent extends BaseAgent {
                         invitation.addReceiver(npc);
 
                         // Definir os stats do jogador
-                        // Formato da mensagem: "PLAYER_DATA <kills>;<nivel>;<conquistas>;<mortes>;<resposta_pergunta>"
+                        // Formato da mensagem: "PLAYER_DATA <kills> <nivel> <conquistas> <mortes> <resposta_pergunta>"
                         // Onde:
                         // - Todos os valores numéricos são enviados sem labels
                         // - A resposta da pergunta é separada por underlines
-                        String playerStats = PLAYER_DATA + " 750 80 10 20 resposta_da_pergunta_separada_por_underline";
+                        String[] possible_answers = { "Caio_e_volto_mais_forte",
+                                "Cada_passo_e_calculado",
+                                "Ganhar_e_o_unico_alvo" };
+
+                        int player_kills = rand.nextInt(500, 1000);
+                        int player_level = rand.nextInt(1, 80);
+                        int player_achievements = rand.nextInt(0, 10);
+                        int player_deaths = rand.nextInt(10, 100);
+
+                        String playerStats = PLAYER_DATA + " " +
+                                player_kills + " " +
+                                player_level + " " +
+                                player_achievements + " " +
+                                player_deaths + " " +
+                                possible_answers[rand.nextInt(0, possible_answers.length)];
+
                         invitation.setContent(playerStats);
                         
                         // Definir ID de conversa único

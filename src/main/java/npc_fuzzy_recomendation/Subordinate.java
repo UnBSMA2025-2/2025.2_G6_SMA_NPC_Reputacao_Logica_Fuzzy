@@ -143,15 +143,19 @@ public class Subordinate extends BaseAgent {
 	private ACLMessage handleSetStrategy(ACLMessage msg, String reqOperation, ACLMessage msg2, boolean strategySet) {
 		if (strategySet) {
 			ArrayList<Double> result = new ArrayList<>();
-			ArrayList<Double> numericData = new ArrayList<>();
-			for (String data : workingData) {
-				try {
-					numericData.add(Double.parseDouble(data));
-				} catch (NumberFormatException e) {
-					// Skip non-numeric values
-					continue;
+			ArrayList<Object> numericData = new ArrayList<>();
+			if(reqOperation.equals(LLM)) {
+				numericData.addAll(workingData);
+			} else {
+				for (String data : workingData) {
+					try {
+						numericData.add(Double.parseDouble(data));
+					} catch (NumberFormatException e) {
+						continue;
+					}
 				}
 			}
+
 			
 			ArrayList<Double> objRet = strategyOp.executeOperation(numericData);
 			String strRet = objRet.stream().map(val -> String.format("%s", Double.toString(val)))
