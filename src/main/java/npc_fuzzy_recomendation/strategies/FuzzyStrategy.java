@@ -7,13 +7,13 @@ import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 public class FuzzyStrategy implements Strategy {
     @Override
-    public ArrayList<Double> executeOperation(ArrayList<Double> recvData) {
+    public ArrayList<Double> executeOperation(ArrayList<Object> recvData) {
         ArrayList<Double> result = new ArrayList<>();
         if (recvData.size() >= 4) {
-            double kills = recvData.get(0);
-            double level = recvData.get(1);
-            double achievements = recvData.get(2);
-            double deaths = recvData.get(3);
+            double kills = (double) recvData.get(0);
+            double level = (double) recvData.get(1);
+            double achievements = (double) recvData.get(2);
+            double deaths = (double) recvData.get(3);
 
             String resourcePath = "/fuzzy/fuzzy_reputation.fcl";
             try (InputStream fclStream = getClass().getResourceAsStream(resourcePath)) {

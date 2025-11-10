@@ -33,8 +33,17 @@ O fluxo de decisão do NPC é dividido em etapas, conforme ilustrado no diagrama
 5. Se essa porcentagem for maior que um certo numero definido pelo NPC ele aceita entrar no grupo, caso contrário rejeita.
 
 ## Screenshots
-![alt text](image.png)
-Figura 1 - Fluxo de decisão do NPC e seus agentes subordinados.
+
+<div align="center">
+  <img src="./assets/image.png" alt="Fluxo de decisão do NPC" width="700"/>
+  <p>Figura 1 - Fluxo de decisão do NPC e seus agentes subordinados.</p>
+</div>
+
+
+<div align="center">
+  <img src="./assets/image-1.png" alt="Fluxo de decisão do NPC" width="700"/>
+<p>Figura 2 - Exemplo de execução do sistema, com os 3 Agentes.</p>
+</div>
 
 ## Instalação 
 **Linguagens**: Java<br>
