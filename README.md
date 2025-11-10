@@ -10,7 +10,7 @@
 | 200014447  |  André Corrêa |
 | xx/xxxxxx  |  Gabriel Rosa |
 | 190058455  |  Mariana Rio  |
-| xx/xxxxxx  |  Rafael Nobre |
+| 200026488  |  Rafael Nobre |
 
 ## Sobre 
 
@@ -74,7 +74,7 @@ make build-and-run
 | André Corrêa  |  Preparação do ambiente, Desenvolvimento da interação com LLM, Revisão técnica do código fonte, Definição da arquitetura da solução | Boa | [Commit](https://github.com/UnBSMA2025-2/2025.2_G6_SMA_NPC_Reputacao_Logica_Fuzzy/commit/3fae050575c35b1a083cebb01dd01650670073ab)
 | Gabriel Rosa  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
 | Mariana Rio   |  Definição e organização da estrutura geral de funcionamento do sistema, fluxo de tomada de decisão com base no perfil do NPC e programação do agente LLM| Boa | [Commit](https://github.com/UnBSMA2025-2/2025.2_G6_SMA_NPC_Reputacao_Logica_Fuzzy/commit/3fae050575c35b1a083cebb01dd01650670073ab)
-| Rafael Nobre  |  Programação dos Fatos da Base de Conhecimento Lógica | Boa | Commit tal (com link)
+| Rafael Nobre  |  Programação da versão inicial da comunicação entre os agentes, utilizando o Framework de especialistas e deixando as interfaces para as estratégias prontas para serem desenvolvidas. | Boa | [Commit](https://github.com/UnBSMA2025-2/2025.2_G6_SMA_NPC_Reputacao_Logica_Fuzzy/commit/1b35f5cfdc6a6de720dba23997d673ed9b2e31df)
 
 ## Outros 
 Quaisquer outras informações sobre o projeto podem ser descritas aqui. Não esqueça, entretanto, de informar sobre:
